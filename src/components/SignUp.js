@@ -1,62 +1,88 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
+import axios from 'axios';
+class Signup extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: '',
+      password: '',
+      password_confirmation: '',
+    };
+  }
 
-const Signup = () => {
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  handleChange = (e) => {
+    this.setState({ [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  handleSubmit = (e) => {
     e.preventDefault();
-    // Aqui você pode adicionar o código para enviar os dados de registro para o servidor
-    // Por exemplo, você pode usar a função fetch() ou uma biblioteca para fazer uma solicitação POST para o servidor.
-    console.log(formData);
+
+    const { email, password, password_confirmation } = this.state;
+
+    // Verifica se as senhas coincidem antes de enviar a solicitação
+    if (password !== password_confirmation) {
+      console.log('As senhas não coincidem.');
+      return;
+    }
+
+    // Crie um objeto com os dados do usuário para enviar à API
+    const user = {
+      user: {
+        email: email,
+        password: password,
+        password_confirmation: password_confirmation,
+      },
+    };
+
+    axios
+      .post('http://localhost:4000/signup', user)
+      .then((response) => {
+        // Lógica para tratar o sucesso do cadastro
+        console.log('Cadastro realizado com sucesso!', response.data);
+      })
+      .catch((error) => {
+        // Lógica para tratar erros de cadastro
+        console.error('Erro ao cadastrar:', error);
+      });
   };
 
-  return (
-    <div className="container">
-      <h2>Signup</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Username</label>
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="form-group">
-          <label>Email</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="form-group">
-          <label>Password</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-          />
-        </div>
-        <button type="submit">Sign Up</button>
-      </form>
-    </div>
-  );
-};
+  render() {
+    return (
+      <div>
+        <h2>Cadastro de Usuário</h2>
+        <form onSubmit={this.handleSubmit}>
+          <div>
+            <label>Email:</label>
+            <input
+              type="email"
+              name="email"
+              value={this.state.email}
+              onChange={this.handleChange}
+            />
+          </div>
+          <div>
+            <label>Senha:</label>
+            <input
+              type="password"
+              name="password"
+              value={this.state.password}
+              onChange={this.handleChange}
+            />
+          </div>
+          <div>
+            <label>Confirme a senha:</label>
+            <input
+              type="password"
+              name="password_confirmation"
+              value={this.state.password_confirmation}
+              onChange={this.handleChange}
+            />
+          </div>
+          <button type="submit">Cadastrar</button>
+        </form>
+      </div>
+    );
+  }
+}
 
 export default Signup;
