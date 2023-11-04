@@ -13,6 +13,10 @@ const Home = () => {
         <div>
           <Link to="/signin">Login</Link>
         </div>
+
+        <div>
+          <Link to="/accounts">Contas</Link>
+        </div>
       </div>
     </div>
   );
